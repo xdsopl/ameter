@@ -93,8 +93,13 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 	if (!online)
 		return;
 	int term_width = 80;
-	int columns = online <= 8 ? online <= 4 ? 1 : 2 : 4;
-	int width = term_width / columns - strlen("cpuN: [] ") - (online < 10 ? 0 : 1);
+	int columns = online <= 16 ? online <= 8 ? online <= 4 ? 1 : 2 : 4 : 8;
+	int matrix_view = online > 16;
+	int width = (term_width - matrix_view * strlen("cpuNNN:|")) / columns;
+	if (matrix_view)
+		width--;
+	else
+		width -= strlen("cpuN: [] ") + (online < 10 ? 0 : 1);
 	int cur_col = 0;
 	for (int i = 0; i < CPU_NUM_MAX; i++) {
 		if (!(last[i].flags & current[i].flags & CPU_ONLINE))
@@ -112,16 +117,29 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 			sum += diff[s];
 		diff[CPU_IDLE] += width - sum;
 		char type[CPU_STAT_MAX] = { 'u', 'n', 's', 'w', 'q', ' ' };
-		fprintf(stderr, "cpu%d:%s[", i, i < 10 && online >= 10 ? "  " : " ");
+		if (matrix_view) {
+			if (!cur_col)
+				fprintf(stderr, "cpu%03d:", i);
+			fputc('|', stderr);
+		} else {
+			fprintf(stderr, "cpu%d:%s[", i, i < 10 && online >= 10 ? "  " : " ");
+		}
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			for (int c = 0; c < diff[s]; c++)
 				fputc(type[s], stderr);
-		fprintf(stderr, "]");
-		if (++cur_col < columns) {
-			fprintf(stderr, " ");
+		if (matrix_view) {
+			if (++cur_col >= columns) {
+				fputs("|\n", stderr);
+				cur_col = 0;
+			}
 		} else {
-			fprintf(stderr, "\n");
-			cur_col = 0;
+			fputc(']', stderr);
+			if (++cur_col < columns) {
+				fputc(' ', stderr);
+			} else {
+				fputc('\n', stderr);
+				cur_col = 0;
+			}
 		}
 	}
 }
