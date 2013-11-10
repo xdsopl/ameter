@@ -142,6 +142,11 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 			}
 		}
 	}
+	if (cur_col) {
+		if (matrix_view)
+			fputc('|', stderr);
+		fputc('\n', stderr);
+	}
 }
 
 void copy_cpu_stat(struct cpu_stat *dst, struct cpu_stat *src)
