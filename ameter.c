@@ -94,7 +94,7 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 		return;
 	int term_width = 80;
 	int columns = 2;
-	int width = term_width / columns - strlen("cpuN: [] ");
+	int width = term_width / columns - strlen("cpuNNN: [] ");
 	int cur_col = 0;
 	for (int i = 0; i < CPU_NUM_MAX; i++) {
 		if (!(last[i].flags & current[i].flags & CPU_ONLINE))
@@ -108,7 +108,12 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			diff[s] = (width * diff[s] + sum / 2) / sum;
 		char type[CPU_STAT_MAX] = { 'u', 'n', 's', 'w', 'q', ' ' };
-		fprintf(stderr, "cpu%d: [", i);
+		char name[8];
+		snprintf(name, sizeof(name), "cpu%d:", i);
+		fputs(name, stderr);
+		for (size_t c = strlen(name); c < sizeof(name); c++)
+			fputc(' ', stderr);
+		fputc('[', stderr);
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			for (int c = 0; c < diff[s]; c++)
 				fputc(type[s], stderr);
