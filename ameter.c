@@ -93,13 +93,15 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 	if (!online)
 		return;
 	int term_width = 80;
-	int columns = online <= 16 ? online <= 8 ? online <= 4 ? 1 : 2 : 4 : 8;
+	int columns = online <= 16 ? online <= 8 ? online <= 4 ? 1 : 2 : 4 : 16;
 	int matrix_view = online > 16;
-	int width = (term_width - matrix_view * strlen("cpuNNN:|")) / columns;
-	if (matrix_view)
+	int width = term_width / columns;
+	if (matrix_view) {
 		width--;
-	else
+		fprintf(stderr, "showing %d cpus ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]):\n", online);
+	} else {
 		width -= strlen("cpuN: [] ") + (online < 10 ? 0 : 1);
+	}
 	int cur_col = 0;
 	for (int i = 0; i < CPU_NUM_MAX; i++) {
 		if (!(last[i].flags & current[i].flags & CPU_ONLINE))
@@ -117,19 +119,15 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 			sum += diff[s];
 		diff[CPU_IDLE] += width - sum;
 		char type[CPU_STAT_MAX] = { 'u', 'n', 's', 'w', 'q', ' ' };
-		if (matrix_view) {
-			if (!cur_col)
-				fprintf(stderr, "cpu%03d:", i);
-			fputc('|', stderr);
-		} else {
+		if (!matrix_view)
 			fprintf(stderr, "cpu%d:%s[", i, i < 10 && online >= 10 ? "  " : " ");
-		}
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			for (int c = 0; c < diff[s]; c++)
 				fputc(type[s], stderr);
 		if (matrix_view) {
+			fputc('|', stderr);
 			if (++cur_col >= columns) {
-				fputs("|\n", stderr);
+				fputc('\n', stderr);
 				cur_col = 0;
 			}
 		} else {
@@ -142,11 +140,8 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 			}
 		}
 	}
-	if (cur_col) {
-		if (matrix_view)
-			fputc('|', stderr);
+	if (cur_col)
 		fputc('\n', stderr);
-	}
 }
 
 void copy_cpu_stat(struct cpu_stat *dst, struct cpu_stat *src)
