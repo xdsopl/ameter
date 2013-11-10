@@ -93,7 +93,7 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 	if (!online)
 		return;
 	int term_width = 80;
-	int columns = 2;
+	int columns = online <= 8 ? 2 : 4;
 	int width = term_width / columns - strlen("cpuNNN: [] ");
 	int cur_col = 0;
 	for (int i = 0; i < CPU_NUM_MAX; i++) {
