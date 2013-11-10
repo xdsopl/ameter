@@ -157,6 +157,45 @@ void handle_cpu_stat()
 	copy_cpu_stat(last_cpu_stat, current_cpu_stat);
 }
 
+struct mem_info {
+	unsigned long total, free, buffers, cached, swap_total, swap_free;
+};
+
+void update_mem_info(struct mem_info *mem)
+{
+	FILE *proc_meminfo = fopen("/proc/meminfo", "r");
+	char str[4096];
+	while (fgets(str, sizeof(str), proc_meminfo)) {
+		if (!strncmp(str, "MemTotal:", strlen("MemTotal:")))
+			sscanf(str, "MemTotal:%lu kB", &mem->total);
+		else if (!strncmp(str, "MemFree:", strlen("MemFree:")))
+			sscanf(str, "MemFree:%lu kB", &mem->free);
+		else if (!strncmp(str, "Buffers:", strlen("Buffers:")))
+			sscanf(str, "Buffers:%lu kB", &mem->buffers);
+		else if (!strncmp(str, "Cached:", strlen("Cached:")))
+			sscanf(str, "Cached:%lu kB", &mem->cached);
+		else if (!strncmp(str, "SwapTotal:", strlen("SwapTotal:")))
+			sscanf(str, "SwapTotal:%lu kB", &mem->swap_total);
+		else if (!strncmp(str, "SwapFree:", strlen("SwapFree:")))
+			sscanf(str, "SwapFree:%lu kB", &mem->swap_free);
+	}
+	fclose(proc_meminfo);
+}
+
+void show_mem_info(struct mem_info *mem)
+{
+	unsigned long used = mem->total - mem->free - mem->buffers - mem->cached;
+	fprintf(stderr, "mem: u = %lukib b = %lukib c = %lukib f = %lukib\n",
+			used, mem->buffers, mem->cached, mem->free);
+}
+
+void handle_mem_info()
+{
+	struct mem_info mem;
+	update_mem_info(&mem);
+	show_mem_info(&mem);
+}
+
 int main()
 {
 	fprintf(stderr, "\E[H\E[2J");
@@ -165,6 +204,7 @@ int main()
 		unsigned ticks = get_ticks();
 		(void)ticks;
 		handle_cpu_stat();
+		handle_mem_info();
 		sleep(3);
 		fprintf(stderr, "\E[H\E[2J");
 	}
