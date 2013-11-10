@@ -87,6 +87,15 @@ void update_cpu_stat(struct cpu_stat *cpus)
 
 void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 {
+	int online = 0;
+	for (int i = 0; i < CPU_NUM_MAX; i++)
+		online += (last[i].flags & current[i].flags & CPU_ONLINE) ? 1 : 0;
+	if (!online)
+		return;
+	int term_width = 80;
+	int columns = 2;
+	int width = term_width / columns - strlen("cpuN: [] ");
+	int cur_col = 0;
 	for (int i = 0; i < CPU_NUM_MAX; i++) {
 		if (!(last[i].flags & current[i].flags & CPU_ONLINE))
 			continue;
@@ -96,14 +105,20 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 		int sum = 0;
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			sum += diff[s];
-		int val_max = 100;
 		for (int s = 0; s < CPU_STAT_MAX; s++)
-			diff[s] = (val_max * diff[s] + sum / 2) / sum;
-		fprintf(stderr, "cpu%03d", i);
+			diff[s] = (width * diff[s] + sum / 2) / sum;
+		char type[CPU_STAT_MAX] = { 'u', 'n', 's', 'i', 'w', 'q' };
+		fprintf(stderr, "cpu%d: [", i);
 		for (int s = 0; s < CPU_STAT_MAX; s++)
-			fprintf(stderr, " %03d", diff[s]);
-		fprintf(stderr, "\n");
-
+			for (int c = 0; c < diff[s]; c++)
+				fputc(type[s], stderr);
+		fprintf(stderr, "]");
+		if (++cur_col < columns) {
+			fprintf(stderr, " ");
+		} else {
+			fprintf(stderr, "\n");
+			cur_col = 0;
+		}
 	}
 }
 
