@@ -18,11 +18,7 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 #define CPU_IDLE (3)
 #define CPU_IOWAIT (4)
 #define CPU_IRQ (5)
-#define CPU_SOFTIRQ (6)
-#define CPU_STEAL (7)
-#define CPU_GUEST (8)
-#define CPU_GUEST_NICE (9)
-#define CPU_STAT_MAX (10)
+#define CPU_STAT_MAX (6)
 
 struct cpu_stat {
 	unsigned long long stats[CPU_STAT_MAX], flags;
@@ -52,6 +48,7 @@ void parse_cpu_stat(struct cpu_stat *cpus, char *str)
 {
 	struct cpu_stat cpu;
 	int num;
+	unsigned long long softirq, steal, guest, guest_nice;
 	int ret = sscanf(str, "cpu%d %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu\n",
 		&num,
 		&cpu.stats[CPU_USER],
@@ -60,10 +57,15 @@ void parse_cpu_stat(struct cpu_stat *cpus, char *str)
 		&cpu.stats[CPU_IDLE],
 		&cpu.stats[CPU_IOWAIT],
 		&cpu.stats[CPU_IRQ],
-		&cpu.stats[CPU_SOFTIRQ],
-		&cpu.stats[CPU_STEAL],
-		&cpu.stats[CPU_GUEST],
-		&cpu.stats[CPU_GUEST_NICE]);
+		&softirq,
+		&steal,
+		&guest,
+		&guest_nice);
+
+	cpu.stats[CPU_IRQ] += softirq;
+	cpu.stats[CPU_SYSTEM] += steal;
+	cpu.stats[CPU_USER] += guest;
+	cpu.stats[CPU_NICE] += guest_nice;
 
 	cpu.flags |= CPU_ONLINE;
 
