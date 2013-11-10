@@ -98,14 +98,13 @@ void update_cpu_stat(struct cpu_stat *cpus)
 	fclose(proc_stat);
 }
 
-void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
+void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_width)
 {
 	int online = 0;
 	for (int i = 0; i < CPU_NUM_MAX; i++)
 		online += (last[i].flags & current[i].flags & CPU_ONLINE) ? 1 : 0;
 	if (!online)
 		return;
-	int term_width = 80;
 	int columns = online <= 16 ? online <= 8 ? online <= 4 ? 1 : 2 : 4 : 16;
 	int matrix_view = online > 16;
 	int width = term_width / columns;
@@ -162,11 +161,11 @@ void copy_cpu_stat(struct cpu_stat *dst, struct cpu_stat *src)
 	memcpy(dst, src, sizeof(struct cpu_stat) * CPU_NUM_MAX);
 }
 
-void handle_cpu_stat()
+void handle_cpu_stat(int term_width)
 {
 	static struct cpu_stat last_cpu_stat[CPU_NUM_MAX], current_cpu_stat[CPU_NUM_MAX];
 	update_cpu_stat(current_cpu_stat);
-	show_cpu_stat(last_cpu_stat, current_cpu_stat);
+	show_cpu_stat(last_cpu_stat, current_cpu_stat, term_width);
 	copy_cpu_stat(last_cpu_stat, current_cpu_stat);
 }
 
@@ -195,10 +194,20 @@ void update_mem_info(struct mem_info *mem)
 	fclose(proc_meminfo);
 }
 
-void show_mem_info(struct mem_info *mem)
+void show_mem_info(struct mem_info *mem, int term_width)
 {
 	unsigned long used = mem->total - mem->free - mem->buffers - mem->cached;
-	fprintf(stderr, "mem: t=");
+	int width = term_width - 5 * 10 - 7;
+	fprintf(stderr, "mem: [");
+	for (unsigned i = 0; i < (width * used + mem->total / 2) / mem->total; i++)
+		fputc('u', stderr);
+	for (unsigned i = 0; i < (width * mem->buffers + mem->total / 2) / mem->total; i++)
+		fputc('b', stderr);
+	for (unsigned i = 0; i < (width * mem->cached + mem->total / 2) / mem->total; i++)
+		fputc('c', stderr);
+	for (unsigned i = 0; i < (width * mem->free + mem->total / 2) / mem->total; i++)
+		fputc(' ', stderr);
+	fprintf(stderr, "] t=");
 	readable_1024(1024 * mem->total);
 	fprintf(stderr, "b u=");
 	readable_1024(1024 * used);
@@ -211,11 +220,11 @@ void show_mem_info(struct mem_info *mem)
 	fprintf(stderr, "b\n");
 }
 
-void handle_mem_info()
+void handle_mem_info(int term_width)
 {
 	struct mem_info mem;
 	update_mem_info(&mem);
-	show_mem_info(&mem);
+	show_mem_info(&mem, term_width);
 }
 
 int main()
@@ -225,8 +234,10 @@ int main()
 	while (1) {
 		unsigned ticks = get_ticks();
 		(void)ticks;
-		handle_cpu_stat();
-		handle_mem_info();
+		int term_width = 80;
+		handle_cpu_stat(term_width);
+		fputc('\n', stderr);
+		handle_mem_info(term_width);
 		sleep(3);
 		fprintf(stderr, "\E[H\E[2J");
 	}
