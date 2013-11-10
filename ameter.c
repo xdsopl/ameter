@@ -107,6 +107,10 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 			sum += diff[s];
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			diff[s] = (width * diff[s] + sum / 2) / sum;
+		sum = 0;
+		for (int s = 0; s < CPU_STAT_MAX; s++)
+			sum += diff[s];
+		diff[CPU_IDLE] += width - sum;
 		char type[CPU_STAT_MAX] = { 'u', 'n', 's', 'w', 'q', ' ' };
 		char name[8];
 		snprintf(name, sizeof(name), "cpu%d:", i);
