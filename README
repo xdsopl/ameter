@@ -1,0 +1,32 @@
+
+ameter - stat system components in a simple terminal
+Written in 2013 by <Ahmet Inan> <xdsopl@googlemail.com>
+To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
+You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+
+Wrote ameter.py 2011 on a weekend to learn python and havent touched it since.
+
+ameter.py's output looks like this:
+*Snip*
+date:  2013-11-09 21:04:39
+
+cpu0:  [uuuuuusssssssssssss ] cpu1:  [uuuuuuuuuuuuuuuuuuuu]
+cpu2:  [nnnnnnnnnnnnnnnnnnnn] cpu3:  [uussss              ]
+cpu4:  [uuss                ] cpu5:  [                    ]
+cpu6:  [uuuuuuuuuuuuuuusssss] cpu7:  [uuuuuuuuuuuuuuuuuuuu]
+
+irq/s: q41=60 q42=1 q43=19 q44=247 q45=47
+
+mem:   [uuuuc                    ] u=2483mib b=664kib c=941mib f=12gib
+
+br0:   rx=   13kib/s tx=    593b/s total: rx=54mib tx=3217kib
+eth0:  rx=   13kib/s tx=    593b/s total: rx=55mib tx=3217kib
+
+sdb:   rx=      0b/s wx=      0b/s total: rx=40mib wx=0b
+sda:   rx=      0b/s wx=      0b/s total: rx=425mib wx=1037mib
+*Snip*
+
+But its CPU stat output doesnt scale very well on >16 core machines and because you really can't be bothered to install python on a "Many Core Platform" I started to reimplement it in c99 and with a better scaling output.
+
+You can quit both with a simple 'ctrl-c'
+
