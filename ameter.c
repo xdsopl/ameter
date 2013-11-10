@@ -10,6 +10,39 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 #include <time.h>
 #include <string.h>
 
+unsigned get_ticks()
+{
+	static struct timespec last;
+	struct timespec current;
+	clock_gettime(CLOCK_MONOTONIC, &current);
+	unsigned diff = (current.tv_sec - last.tv_sec) * 1000
+		+ (current.tv_nsec - last.tv_nsec) / 1000000;
+	last = current;
+	return diff ? diff : 1;
+}
+
+void readable_1024(unsigned long long value)
+{
+	char *prefix[] = { "", "ki", "mi", "gi", "ti", "pi" };
+	unsigned i = 0;
+	while (i < sizeof(prefix) / sizeof(*prefix)) {
+		if (value < 10240)
+			break;
+		value /= 1024;
+		i++;
+	}
+	fprintf(stderr, "%llu%s", value, prefix[i]);
+}
+
+void print_copyright()
+{
+	fputs(	"ameter - stat system components in a simple terminal\n"
+		"Written in 2013 by <Ahmet Inan> <xdsopl@googlemail.com>\n"
+		"To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.\n"
+		"You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.\n"
+	, stderr);
+}
+
 #define CPU_NUM_MAX (512)
 #define CPU_ONLINE (1 << 0)
 #define CPU_USER (0)
@@ -23,26 +56,6 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 struct cpu_stat {
 	unsigned long long stats[CPU_STAT_MAX], flags;
 };
-
-unsigned get_ticks()
-{
-	static struct timespec last;
-	struct timespec current;
-	clock_gettime(CLOCK_MONOTONIC, &current);
-	unsigned diff = (current.tv_sec - last.tv_sec) * 1000
-		+ (current.tv_nsec - last.tv_nsec) / 1000000;
-	last = current;
-	return diff ? diff : 1;
-}
-
-void print_copyright()
-{
-	fputs(	"ameter - stat system components in a simple terminal\n"
-		"Written in 2013 by <Ahmet Inan> <xdsopl@googlemail.com>\n"
-		"To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.\n"
-		"You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.\n"
-	, stderr);
-}
 
 void parse_cpu_stat(struct cpu_stat *cpus, char *str)
 {
@@ -185,8 +198,17 @@ void update_mem_info(struct mem_info *mem)
 void show_mem_info(struct mem_info *mem)
 {
 	unsigned long used = mem->total - mem->free - mem->buffers - mem->cached;
-	fprintf(stderr, "mem: u = %lukib b = %lukib c = %lukib f = %lukib\n",
-			used, mem->buffers, mem->cached, mem->free);
+	fprintf(stderr, "mem: t=");
+	readable_1024(1024 * mem->total);
+	fprintf(stderr, "b u=");
+	readable_1024(1024 * used);
+	fprintf(stderr, "b b=");
+	readable_1024(1024 * mem->buffers);
+	fprintf(stderr, "b c=");
+	readable_1024(1024 * mem->cached);
+	fprintf(stderr, "b f=");
+	readable_1024(1024 * mem->free);
+	fprintf(stderr, "b\n");
 }
 
 void handle_mem_info()
