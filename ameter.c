@@ -15,9 +15,9 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 #define CPU_USER (0)
 #define CPU_NICE (1)
 #define CPU_SYSTEM (2)
-#define CPU_IDLE (3)
-#define CPU_IOWAIT (4)
-#define CPU_IRQ (5)
+#define CPU_IOWAIT (3)
+#define CPU_IRQ (4)
+#define CPU_IDLE (5)
 #define CPU_STAT_MAX (6)
 
 struct cpu_stat {
@@ -107,7 +107,7 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current)
 			sum += diff[s];
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			diff[s] = (width * diff[s] + sum / 2) / sum;
-		char type[CPU_STAT_MAX] = { 'u', 'n', 's', 'i', 'w', 'q' };
+		char type[CPU_STAT_MAX] = { 'u', 'n', 's', 'w', 'q', ' ' };
 		fprintf(stderr, "cpu%d: [", i);
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			for (int c = 0; c < diff[s]; c++)
