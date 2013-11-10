@@ -33,34 +33,21 @@ You can quit both with a simple 'ctrl-c'
 And this is how the new ameter looks like on a "Many Core Platform" at the moment:
 
 *snip*
-cpu000:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu008:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu016:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu024:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu032:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu040:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu048:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu056:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu064:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu072:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu080:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu088:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu096:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu104:|uuuuuuuu|uuuuuuu |uuuuuuuu|uuuuuuuu|uuuuuuus|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu112:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu120:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu128:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu136:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu144:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu152:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu160:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu168:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu176:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu184:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu192:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu200:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu208:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu216:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
-cpu224:|uuuuuuuu|uuuuuuuu|uuuuuuuu|uuuuuuuu|
+showing 228 cpus ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]):
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uus |uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
+uuuu|uuuu|uuuu|uuuu|
 *snip*
 
