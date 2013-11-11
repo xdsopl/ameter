@@ -42,15 +42,6 @@ void readable_1024(unsigned long long value)
 	fprintf(stderr, "%llu%s", value, prefix[i]);
 }
 
-void print_copyright()
-{
-	fputs(	"ameter - stat system components in a simple terminal\n"
-		"Written in 2013 by <Ahmet Inan> <xdsopl@googlemail.com>\n"
-		"To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.\n"
-		"You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.\n"
-	, stderr);
-}
-
 #define CPU_NUM_MAX (512)
 #define CPU_ONLINE (1 << 0)
 #define CPU_USER (0)
@@ -125,9 +116,11 @@ int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_widt
 		width -= strlen("cpuN: [] ") + (online < 10 ? 0 : 1);
 	}
 	int cur_col = 0;
+	int init = 1;
 	for (int i = 0; i < CPU_NUM_MAX; i++) {
 		if (!(last[i].flags & current[i].flags & CPU_ONLINE))
 			continue;
+		init = 0;
 		int diff[CPU_STAT_MAX];
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			diff[s] = current[i].stats[s] - last[i].stats[s];
@@ -164,6 +157,8 @@ int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_widt
 	}
 	if (cur_col)
 		fputc('\n', stderr);
+	if (init)
+		fprintf(stderr, "initializing cpu stat ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]) ..\n");
 	return rows;
 }
 
@@ -246,10 +241,9 @@ int handle_mem_info(int term_width)
 
 int main()
 {
-	fprintf(stderr, "\E[H\E[2J");
-	print_copyright();
 	int compact = 0;
 	while (1) {
+		fprintf(stderr, "\E[H\E[2J");
 		int term_width = 80;
 		int term_height = 24;
 		int rows = 1;
@@ -265,7 +259,6 @@ int main()
 		if (rows > term_height)
 			compact = 1;
 		sleep(3);
-		fprintf(stderr, "\E[H\E[2J");
 	}
 	return 0;
 }
