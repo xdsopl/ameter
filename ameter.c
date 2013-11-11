@@ -106,19 +106,21 @@ void update_cpu_stat(struct cpu_stat *cpus)
 	fclose(proc_stat);
 }
 
-void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_width)
+int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_width, int compact)
 {
 	int online = 0;
 	for (int i = 0; i < CPU_NUM_MAX; i++)
-		online += (last[i].flags & current[i].flags & CPU_ONLINE) ? 1 : 0;
-	if (!online)
-		return;
+		online += (current[i].flags & CPU_ONLINE) ? 1 : 0;
 	int columns = online <= 16 ? online <= 8 ? online <= 4 ? 1 : 2 : 4 : 16;
 	int matrix_view = online > 16;
 	int width = term_width / columns;
+	int rows = (online + columns - 1) / columns;
 	if (matrix_view) {
 		width--;
-		fprintf(stderr, "showing %d cpus ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]):\n", online);
+		if (!compact) {
+			fprintf(stderr, "showing %d cpus ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]):\n", online);
+			rows++;
+		}
 	} else {
 		width -= strlen("cpuN: [] ") + (online < 10 ? 0 : 1);
 	}
@@ -162,6 +164,7 @@ void show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_wid
 	}
 	if (cur_col)
 		fputc('\n', stderr);
+	return rows;
 }
 
 void copy_cpu_stat(struct cpu_stat *dst, struct cpu_stat *src)
@@ -169,12 +172,13 @@ void copy_cpu_stat(struct cpu_stat *dst, struct cpu_stat *src)
 	memcpy(dst, src, sizeof(struct cpu_stat) * CPU_NUM_MAX);
 }
 
-void handle_cpu_stat(int term_width)
+int handle_cpu_stat(int term_width, int compact)
 {
 	static struct cpu_stat last_cpu_stat[CPU_NUM_MAX], current_cpu_stat[CPU_NUM_MAX];
 	update_cpu_stat(current_cpu_stat);
-	show_cpu_stat(last_cpu_stat, current_cpu_stat, term_width);
+	int rows = show_cpu_stat(last_cpu_stat, current_cpu_stat, term_width, compact);
 	copy_cpu_stat(last_cpu_stat, current_cpu_stat);
+	return rows;
 }
 
 struct mem_info {
@@ -202,7 +206,7 @@ void update_mem_info(struct mem_info *mem)
 	fclose(proc_meminfo);
 }
 
-void show_mem_info(struct mem_info *mem, int term_width)
+int show_mem_info(struct mem_info *mem, int term_width)
 {
 	unsigned long used = mem->total - mem->free - mem->buffers - mem->cached;
 	int width = term_width - 5 * 10 - 7;
@@ -230,29 +234,38 @@ void show_mem_info(struct mem_info *mem, int term_width)
 	fprintf(stderr, "b f=");
 	readable_1024(1024 * mem->free);
 	fprintf(stderr, "b\n");
+	return 1;
 }
 
-void handle_mem_info(int term_width)
+int handle_mem_info(int term_width)
 {
 	struct mem_info mem;
 	update_mem_info(&mem);
-	show_mem_info(&mem, term_width);
+	return show_mem_info(&mem, term_width);
 }
 
 int main()
 {
 	fprintf(stderr, "\E[H\E[2J");
 	print_copyright();
+	int compact = 0;
 	while (1) {
+		int term_width = 80;
+		int term_height = 24;
+		int rows = 1;
+		fputs(string_time("%F %T\n"), stderr);
+		if (!compact)
+			fputc('\n', stderr);
 		unsigned ticks = get_ticks();
 		(void)ticks;
-		int term_width = 80;
-		handle_cpu_stat(term_width);
-		fputc('\n', stderr);
-		handle_mem_info(term_width);
+		rows += handle_cpu_stat(term_width, compact);
+		if (!compact)
+			fputc('\n', stderr);
+		rows += handle_mem_info(term_width);
+		if (rows > term_height)
+			compact = 1;
 		sleep(3);
 		fprintf(stderr, "\E[H\E[2J");
-		fputs(string_time("%F %T\n\n"), stderr);
 	}
 	return 0;
 }
