@@ -99,6 +99,7 @@ void update_cpu_stat(struct cpu_stat *cpus)
 
 int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_width, int compact)
 {
+	(void)compact;
 	int online = 0;
 	for (int i = 0; i < CPU_NUM_MAX; i++)
 		online += (current[i].flags & CPU_ONLINE) ? 1 : 0;
@@ -108,10 +109,6 @@ int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_widt
 	int rows = (online + columns - 1) / columns;
 	if (matrix_view) {
 		width--;
-		if (!compact) {
-			fprintf(stderr, "showing %d cpus ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]):\n", online);
-			rows++;
-		}
 	} else {
 		width -= strlen("cpuN: [] ") + (online < 10 ? 0 : 1);
 	}
@@ -158,7 +155,7 @@ int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_widt
 	if (cur_col)
 		fputc('\n', stderr);
 	if (init)
-		fprintf(stderr, "initializing cpu stat ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]) ..\n");
+		fprintf(stderr, "initializing %d cpus ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]) ..\n", online);
 	return rows;
 }
 
