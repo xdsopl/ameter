@@ -198,14 +198,18 @@ void show_mem_info(struct mem_info *mem, int term_width)
 {
 	unsigned long used = mem->total - mem->free - mem->buffers - mem->cached;
 	int width = term_width - 5 * 10 - 7;
+	int used_width = (width * used + mem->total / 2) / mem->total;
+	int buffers_width = (width * mem->buffers + mem->total / 2) / mem->total;
+	int cached_width = (width * mem->cached + mem->total / 2) / mem->total;
+	int free_width = width - used_width - buffers_width - cached_width;
 	fprintf(stderr, "mem: [");
-	for (unsigned i = 0; i < (width * used + mem->total / 2) / mem->total; i++)
+	for (int i = 0; i < used_width; i++)
 		fputc('u', stderr);
-	for (unsigned i = 0; i < (width * mem->buffers + mem->total / 2) / mem->total; i++)
+	for (int i = 0; i < buffers_width; i++)
 		fputc('b', stderr);
-	for (unsigned i = 0; i < (width * mem->cached + mem->total / 2) / mem->total; i++)
+	for (int i = 0; i < cached_width; i++)
 		fputc('c', stderr);
-	for (unsigned i = 0; i < (width * mem->free + mem->total / 2) / mem->total; i++)
+	for (int i = 0; i < free_width; i++)
 		fputc(' ', stderr);
 	fprintf(stderr, "] t=");
 	readable_1024(1024 * mem->total);
