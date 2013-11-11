@@ -42,6 +42,21 @@ void readable_1024(unsigned long long value)
 	fprintf(stderr, "%llu%s", value, prefix[i]);
 }
 
+void aligned_1024(unsigned long long value)
+{
+	char *prefix[] = { "", "ki", "mi", "gi", "ti", "pi" };
+	unsigned i = 0;
+	while (i < sizeof(prefix) / sizeof(*prefix)) {
+		if (value < 10240)
+			break;
+		value /= 1024;
+		i++;
+	}
+	if (!i)
+		fputs("  ", stderr);
+	fprintf(stderr, "%5llu%s", value, prefix[i]);
+}
+
 #define CPU_NUM_MAX (512)
 #define CPU_ONLINE (1 << 0)
 #define CPU_USER (0)
