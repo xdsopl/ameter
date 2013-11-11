@@ -21,6 +21,14 @@ unsigned get_ticks()
 	return diff ? diff : 1;
 }
 
+char *string_time(char *fmt)
+{
+	static char s[64];
+	time_t now = time(0);
+	strftime(s, sizeof(s), fmt, localtime(&now));
+	return s;
+}
+
 void readable_1024(unsigned long long value)
 {
 	char *prefix[] = { "", "ki", "mi", "gi", "ti", "pi" };
@@ -244,6 +252,7 @@ int main()
 		handle_mem_info(term_width);
 		sleep(3);
 		fprintf(stderr, "\E[H\E[2J");
+		fputs(string_time("%F %T\n\n"), stderr);
 	}
 	return 0;
 }
