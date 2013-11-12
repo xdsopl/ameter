@@ -10,43 +10,41 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 #include <curses.h>
 #include "utils.h"
 
-int handle_cpu_stat(int term_width, int compact);
-int handle_mem_info(int term_width);
-int handle_net_stat(unsigned ticks);
-int handle_disk_stat(unsigned ticks);
+int handle_cpu_stat(WINDOW *pad, int compact);
+int handle_mem_info(WINDOW *pad);
+int handle_net_stat(WINDOW *pad, unsigned ticks);
+int handle_disk_stat(WINDOW *pad, unsigned ticks);
 
-static int seperator(int compact)
+static int seperator(WINDOW *pad, int compact)
 {
 	if (compact)
 		return 0;
-	addch('\n');
+	waddch(pad, '\n');
 	return 1;
 }
 
-WINDOW *stdscr;
-
 int main()
 {
-	stdscr = initscr();
+	WINDOW *stdscr = initscr();
+	WINDOW *pad = newpad(getmaxy(stdscr), getmaxx(stdscr) + 1);
 	int compact = 0;
 	while (1) {
-		clear();
-		int term_width = getmaxx(stdscr);
-		int term_height = getmaxy(stdscr);
+		wclear(pad);
+		wresize(pad, getmaxy(stdscr), getmaxx(stdscr) + 1);
 		int rows = 1;
-		addstr(string_time("%F %T\n"));
-		rows += seperator(compact);
-		rows += handle_cpu_stat(term_width, compact);
-		rows += seperator(compact);
-		rows += handle_mem_info(term_width);
-		rows += seperator(compact);
+		waddstr(pad, string_time("%F %T\n"));
+		rows += seperator(pad, compact);
+		rows += handle_cpu_stat(pad, compact);
+		rows += seperator(pad, compact);
+		rows += handle_mem_info(pad);
+		rows += seperator(pad, compact);
 		unsigned ticks = get_ticks();
-		rows += handle_net_stat(ticks);
-		rows += seperator(compact);
-		rows += handle_disk_stat(ticks);
-		if (rows > term_height)
+		rows += handle_net_stat(pad, ticks);
+		rows += seperator(pad, compact);
+		rows += handle_disk_stat(pad, ticks);
+		if (rows > getmaxy(stdscr))
 			compact = 1;
-		refresh();
+		prefresh(pad, 0, 0, 0, 0, getmaxy(stdscr) - 1, getmaxx(stdscr) - 1);
 		sleep(3);
 	}
 	return 0;

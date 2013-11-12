@@ -64,7 +64,7 @@ static void update_cpu_stat(struct cpu_stat *cpus)
 	fclose(proc_stat);
 }
 
-static int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_width, int compact)
+static int show_cpu_stat(WINDOW *pad, struct cpu_stat *last, struct cpu_stat *current, int compact)
 {
 	(void)compact;
 	int online = 0;
@@ -72,7 +72,7 @@ static int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int te
 		online += (current[i].flags & CPU_ONLINE) ? 1 : 0;
 	int columns = online <= 16 ? online <= 8 ? online <= 4 ? 1 : 2 : 4 : 16;
 	int matrix_view = online > 16;
-	int width = term_width / columns;
+	int width = (getmaxx(pad)-1) / columns;
 	int rows = (online + columns - 1) / columns;
 	if (matrix_view) {
 		width--;
@@ -101,30 +101,30 @@ static int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int te
 		diff[CPU_IDLE] += width - sum;
 		char type[CPU_STAT_MAX] = { 'u', 'n', 's', 'w', 'q', ' ' };
 		if (!matrix_view)
-			printw("cpu%d:%s[", i, i < 10 && online >= 10 ? "  " : " ");
+			wprintw(pad, "cpu%d:%s[", i, i < 10 && online >= 10 ? "  " : " ");
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			for (int c = 0; c < diff[s]; c++)
-				addch(type[s]);
+				waddch(pad, type[s]);
 		if (matrix_view) {
-			addch('|');
+			waddch(pad, '|');
 			if (++cur_col >= columns) {
-				addch('\n');
+				waddch(pad, '\n');
 				cur_col = 0;
 			}
 		} else {
-			addch(']');
+			waddch(pad, ']');
 			if (++cur_col < columns) {
-				addch(' ');
+				waddch(pad, ' ');
 			} else {
-				addch('\n');
+				waddch(pad, '\n');
 				cur_col = 0;
 			}
 		}
 	}
 	if (cur_col)
-		addch('\n');
+		waddch(pad, '\n');
 	if (init)
-		printw("initializing %d cpus ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]) ..\n", online);
+		wprintw(pad, "initializing %d cpus ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]) ..\n", online);
 	return rows;
 }
 
@@ -133,11 +133,11 @@ static void copy_cpu_stat(struct cpu_stat *dst, struct cpu_stat *src)
 	memcpy(dst, src, sizeof(struct cpu_stat) * CPU_NUM_MAX);
 }
 
-int handle_cpu_stat(int term_width, int compact)
+int handle_cpu_stat(WINDOW *pad, int compact)
 {
 	static struct cpu_stat last_cpu_stat[CPU_NUM_MAX], current_cpu_stat[CPU_NUM_MAX];
 	update_cpu_stat(current_cpu_stat);
-	int rows = show_cpu_stat(last_cpu_stat, current_cpu_stat, term_width, compact);
+	int rows = show_cpu_stat(pad, last_cpu_stat, current_cpu_stat, compact);
 	copy_cpu_stat(last_cpu_stat, current_cpu_stat);
 	return rows;
 }

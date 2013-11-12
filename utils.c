@@ -28,7 +28,7 @@ char *string_time(char *fmt)
 	return s;
 }
 
-void readable_1024(unsigned long long value)
+void readable_1024(WINDOW *pad, unsigned long long value)
 {
 	char *prefix[] = { "", "ki", "mi", "gi", "ti", "pi" };
 	unsigned i = 0;
@@ -38,10 +38,10 @@ void readable_1024(unsigned long long value)
 		value = (value + 512) / 1024;
 		i++;
 	}
-	printw("%llu%s", value, prefix[i]);
+	wprintw(pad, "%llu%s", value, prefix[i]);
 }
 
-void aligned_1024(unsigned long long value)
+void aligned_1024(WINDOW *pad, unsigned long long value)
 {
 	char *prefix[] = { "", "ki", "mi", "gi", "ti", "pi" };
 	unsigned i = 0;
@@ -52,8 +52,8 @@ void aligned_1024(unsigned long long value)
 		i++;
 	}
 	if (!i)
-		printw("  %5llu%s", value, prefix[i]);
+		wprintw(pad, "  %5llu%s", value, prefix[i]);
 	else
-		printw("%5llu%s", value, prefix[i]);
+		wprintw(pad, "%5llu%s", value, prefix[i]);
 }
 

@@ -55,41 +55,41 @@ static void copy_net_stat(struct net_stat *dst, struct net_stat *src)
 	memcpy(dst, src, sizeof(struct net_stat) * NET_DEV_NUM_MAX);
 }
 
-static int show_net_stat(struct net_stat *last, struct net_stat *current, unsigned ticks)
+static int show_net_stat(WINDOW *pad, struct net_stat *last, struct net_stat *current, unsigned ticks)
 {
 	int rows = 0;
 	for (int i = 0; i < NET_DEV_NUM_MAX; i++) {
 		if (!current[i].rx && !current[i].tx)
 			continue;
-		addstr(current[i].name);
-		addstr(":");
+		waddstr(pad, current[i].name);
+		waddch(pad, ':');
 		for (int c = strlen(current[i].name); c < 4; c++)
-			addstr(" ");
+			waddch(pad, ' ');
 		int j = 0;
 		while (j < NET_DEV_NUM_MAX && strcmp(last[j].name, current[i].name))
 			j++;
 		if (j < NET_DEV_NUM_MAX) {
-			addstr(" rx=");
-			aligned_1024((1000 * (current[i].rx - last[j].rx) + ticks / 2) / ticks);
-			addstr("b/s tx=");
-			aligned_1024((1000 * (current[i].tx - last[j].tx) + ticks / 2) / ticks);
-			addstr("b/s");
+			waddstr(pad, " rx=");
+			aligned_1024(pad, (1000 * (current[i].rx - last[j].rx) + ticks / 2) / ticks);
+			waddstr(pad, "b/s tx=");
+			aligned_1024(pad, (1000 * (current[i].tx - last[j].tx) + ticks / 2) / ticks);
+			waddstr(pad, "b/s");
 		}
-		addstr(" total: rx=");
-		aligned_1024(current[i].rx);
-		addstr("b tx=");
-		aligned_1024(current[i].tx);
-		addstr("b\n");
+		waddstr(pad, " total: rx=");
+		aligned_1024(pad, current[i].rx);
+		waddstr(pad, "b tx=");
+		aligned_1024(pad, current[i].tx);
+		waddstr(pad, "b\n");
 		rows++;
 	}
 	return rows;
 }
 
-int handle_net_stat(unsigned ticks)
+int handle_net_stat(WINDOW *pad, unsigned ticks)
 {
 	static struct net_stat last_net_stat[NET_DEV_NUM_MAX], current_net_stat[NET_DEV_NUM_MAX];
 	update_net_stat(current_net_stat);
-	int rows = show_net_stat(last_net_stat, current_net_stat, ticks);
+	int rows = show_net_stat(pad, last_net_stat, current_net_stat, ticks);
 	copy_net_stat(last_net_stat, current_net_stat);
 	return rows;
 }

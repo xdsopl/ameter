@@ -59,42 +59,42 @@ static void copy_disk_stat(struct disk_stat *dst, struct disk_stat *src)
 	memcpy(dst, src, sizeof(struct disk_stat) * DISK_STAT_NUM_MAX);
 }
 
-static int show_disk_stat(struct disk_stat *last, struct disk_stat *current, unsigned ticks)
+static int show_disk_stat(WINDOW *pad, struct disk_stat *last, struct disk_stat *current, unsigned ticks)
 {
 	int sb = 512;
 	int rows = 0;
 	for (int i = 0; i < DISK_STAT_NUM_MAX; i++) {
 		if (!current[i].rx && !current[i].wx)
 			continue;
-		addstr(current[i].name);
-		addstr(":");
+		waddstr(pad, current[i].name);
+		waddch(pad, ':');
 		for (int c = strlen(current[i].name); c < 4; c++)
-			addstr(" ");
+			waddch(pad, ' ');
 		int j = 0;
 		while (j < DISK_STAT_NUM_MAX && strcmp(last[j].name, current[i].name))
 			j++;
 		if (j < DISK_STAT_NUM_MAX) {
-			addstr(" rx=");
-			aligned_1024((1000 * sb * (current[i].rx - last[j].rx) + ticks / 2) / ticks);
-			addstr("b/s wx=");
-			aligned_1024((1000 * sb * (current[i].wx - last[j].wx) + ticks / 2) / ticks);
-			addstr("b/s");
+			waddstr(pad, " rx=");
+			aligned_1024(pad, (1000 * sb * (current[i].rx - last[j].rx) + ticks / 2) / ticks);
+			waddstr(pad, "b/s wx=");
+			aligned_1024(pad, (1000 * sb * (current[i].wx - last[j].wx) + ticks / 2) / ticks);
+			waddstr(pad, "b/s");
 		}
-		addstr(" total: rx=");
-		aligned_1024(sb * current[i].rx);
-		addstr("b wx=");
-		aligned_1024(sb * current[i].wx);
-		addstr("b\n");
+		waddstr(pad, " total: rx=");
+		aligned_1024(pad, sb * current[i].rx);
+		waddstr(pad, "b wx=");
+		aligned_1024(pad, sb * current[i].wx);
+		waddstr(pad, "b\n");
 		rows++;
 	}
 	return rows;
 }
 
-int handle_disk_stat(unsigned ticks)
+int handle_disk_stat(WINDOW *pad, unsigned ticks)
 {
 	static struct disk_stat last_disk_stat[DISK_STAT_NUM_MAX], current_disk_stat[DISK_STAT_NUM_MAX];
 	update_disk_stat(current_disk_stat);
-	int rows = show_disk_stat(last_disk_stat, current_disk_stat, ticks);
+	int rows = show_disk_stat(pad, last_disk_stat, current_disk_stat, ticks);
 	copy_disk_stat(last_disk_stat, current_disk_stat);
 	return rows;
 }

@@ -8,6 +8,6 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 #define UTILS_H
 unsigned get_ticks();
 char *string_time(char *fmt);
-void readable_1024(unsigned long long value);
-void aligned_1024(unsigned long long value);
+void readable_1024(WINDOW *pad, unsigned long long value);
+void aligned_1024(WINDOW *pad, unsigned long long value);
 #endif
