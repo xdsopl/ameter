@@ -255,12 +255,12 @@ int handle_mem_info(int term_width)
 
 #define NET_DEV_NUM_MAX (8)
 
-struct net_dev {
+struct net_stat {
 	char name[8];
 	unsigned long long rx, tx;
 };
 
-void parse_net_dev(struct net_dev *dev, char *str)
+void parse_net_stat(struct net_stat *dev, char *str)
 {
 	int i;
 	for (i = 0; str[i] == ' ' && i < 6; i++);
@@ -273,25 +273,25 @@ void parse_net_dev(struct net_dev *dev, char *str)
 		&tmp[4], &tmp[5], &tmp[6], &dev->tx);
 }
 
-void update_net_dev(struct net_dev *devs)
+void update_net_stat(struct net_stat *devs)
 {
-	memset(devs, 0, sizeof(struct net_dev) * NET_DEV_NUM_MAX);
+	memset(devs, 0, sizeof(struct net_stat) * NET_DEV_NUM_MAX);
 	FILE *proc_net_dev = fopen("/proc/net/dev", "r");
 	char str[4096];
 	int i = 0;
 	while (i < NET_DEV_NUM_MAX && fgets(str, sizeof(str), proc_net_dev)) {
 		if (strlen(str) > 6 && str[6] == ':')
-			parse_net_dev(devs + i++, str);
+			parse_net_stat(devs + i++, str);
 	}
 	fclose(proc_net_dev);
 }
 
-void copy_net_dev(struct net_dev *dst, struct net_dev *src)
+void copy_net_stat(struct net_stat *dst, struct net_stat *src)
 {
-	memcpy(dst, src, sizeof(struct net_dev) * NET_DEV_NUM_MAX);
+	memcpy(dst, src, sizeof(struct net_stat) * NET_DEV_NUM_MAX);
 }
 
-int show_net_dev(struct net_dev *last, struct net_dev *current, unsigned ticks)
+int show_net_stat(struct net_stat *last, struct net_stat *current, unsigned ticks)
 {
 	int rows = 0;
 	for (int i = 0; i < NET_DEV_NUM_MAX; i++) {
@@ -321,12 +321,12 @@ int show_net_dev(struct net_dev *last, struct net_dev *current, unsigned ticks)
 	return rows;
 }
 
-int handle_net_dev(unsigned ticks)
+int handle_net_stat(unsigned ticks)
 {
-	static struct net_dev last_net_dev[NET_DEV_NUM_MAX], current_net_dev[NET_DEV_NUM_MAX];
-	update_net_dev(current_net_dev);
-	int rows = show_net_dev(last_net_dev, current_net_dev, ticks);
-	copy_net_dev(last_net_dev, current_net_dev);
+	static struct net_stat last_net_stat[NET_DEV_NUM_MAX], current_net_stat[NET_DEV_NUM_MAX];
+	update_net_stat(current_net_stat);
+	int rows = show_net_stat(last_net_stat, current_net_stat, ticks);
+	copy_net_stat(last_net_stat, current_net_stat);
 	return rows;
 }
 
@@ -431,7 +431,7 @@ int main()
 		if (!compact)
 			fputc('\n', stderr);
 		unsigned ticks = get_ticks();
-		rows += handle_net_dev(ticks);
+		rows += handle_net_stat(ticks);
 		if (!compact)
 			fputc('\n', stderr);
 		rows += handle_disk_stat(ticks);
