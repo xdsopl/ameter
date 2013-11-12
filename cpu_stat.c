@@ -91,6 +91,8 @@ static int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int te
 		int sum = 0;
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			sum += diff[s];
+		if (!sum)
+			continue;
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			diff[s] = (width * diff[s] + sum / 2) / sum;
 		sum = 0;
