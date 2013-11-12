@@ -312,9 +312,9 @@ int show_net_stat(struct net_stat *last, struct net_stat *current, unsigned tick
 			fputs("b/s", stderr);
 		}
 		fputs(" total: rx=", stderr);
-		readable_1024(current[i].rx);
+		aligned_1024(current[i].rx);
 		fputs("b tx=", stderr);
-		readable_1024(current[i].tx);
+		aligned_1024(current[i].tx);
 		fputs("b\n", stderr);
 		rows++;
 	}
@@ -395,9 +395,9 @@ int show_disk_stat(struct disk_stat *last, struct disk_stat *current, unsigned t
 			fputs("b/s", stderr);
 		}
 		fputs(" total: rx=", stderr);
-		readable_1024(sb * current[i].rx);
+		aligned_1024(sb * current[i].rx);
 		fputs("b wx=", stderr);
-		readable_1024(sb * current[i].wx);
+		aligned_1024(sb * current[i].wx);
 		fputs("b\n", stderr);
 		rows++;
 	}
