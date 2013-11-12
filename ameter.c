@@ -29,8 +29,8 @@ int main()
 	int compact = 0;
 	while (1) {
 		clear();
-		int term_width = 80;
-		int term_height = 23;
+		int term_width = getmaxx(stdscr);
+		int term_height = getmaxy(stdscr);
 		int rows = 1;
 		addstr(string_time("%F %T\n"));
 		rows += seperator(compact);
