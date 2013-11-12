@@ -7,6 +7,7 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 
 #include <stdio.h>
 #include <string.h>
+#include <curses.h>
 #include "utils.h"
 
 #define NET_DEV_NUM_MAX (8)
@@ -60,25 +61,25 @@ static int show_net_stat(struct net_stat *last, struct net_stat *current, unsign
 	for (int i = 0; i < NET_DEV_NUM_MAX; i++) {
 		if (!current[i].rx && !current[i].tx)
 			continue;
-		fputs(current[i].name, stderr);
-		fputs(":", stderr);
+		addstr(current[i].name);
+		addstr(":");
 		for (int c = strlen(current[i].name); c < 4; c++)
-			fputs(" ", stderr);
+			addstr(" ");
 		int j = 0;
 		while (j < NET_DEV_NUM_MAX && strcmp(last[j].name, current[i].name))
 			j++;
 		if (j < NET_DEV_NUM_MAX) {
-			fputs(" rx=", stderr);
+			addstr(" rx=");
 			aligned_1024((1000 * (current[i].rx - last[j].rx) + ticks / 2) / ticks);
-			fputs("b/s tx=", stderr);
+			addstr("b/s tx=");
 			aligned_1024((1000 * (current[i].tx - last[j].tx) + ticks / 2) / ticks);
-			fputs("b/s", stderr);
+			addstr("b/s");
 		}
-		fputs(" total: rx=", stderr);
+		addstr(" total: rx=");
 		aligned_1024(current[i].rx);
-		fputs("b tx=", stderr);
+		addstr("b tx=");
 		aligned_1024(current[i].tx);
-		fputs("b\n", stderr);
+		addstr("b\n");
 		rows++;
 	}
 	return rows;

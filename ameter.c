@@ -7,6 +7,7 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 
 #include <stdio.h>
 #include <unistd.h>
+#include <curses.h>
 #include "utils.h"
 
 int handle_cpu_stat(int term_width, int compact);
@@ -18,19 +19,20 @@ static int seperator(int compact)
 {
 	if (compact)
 		return 0;
-	fputc('\n', stderr);
+	addch('\n');
 	return 1;
 }
 
 int main()
 {
+	initscr();
 	int compact = 0;
 	while (1) {
-		fprintf(stderr, "\E[H\E[2J");
+		clear();
 		int term_width = 80;
 		int term_height = 23;
 		int rows = 1;
-		fputs(string_time("%F %T\n"), stderr);
+		addstr(string_time("%F %T\n"));
 		rows += seperator(compact);
 		rows += handle_cpu_stat(term_width, compact);
 		rows += seperator(compact);
@@ -42,6 +44,7 @@ int main()
 		rows += handle_disk_stat(ticks);
 		if (rows > term_height)
 			compact = 1;
+		refresh();
 		sleep(3);
 	}
 	return 0;

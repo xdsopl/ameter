@@ -7,6 +7,7 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 
 #include <stdio.h>
 #include <string.h>
+#include <curses.h>
 
 #define CPU_NUM_MAX (512)
 #define CPU_ONLINE (1 << 0)
@@ -98,30 +99,30 @@ static int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int te
 		diff[CPU_IDLE] += width - sum;
 		char type[CPU_STAT_MAX] = { 'u', 'n', 's', 'w', 'q', ' ' };
 		if (!matrix_view)
-			fprintf(stderr, "cpu%d:%s[", i, i < 10 && online >= 10 ? "  " : " ");
+			printw("cpu%d:%s[", i, i < 10 && online >= 10 ? "  " : " ");
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			for (int c = 0; c < diff[s]; c++)
-				fputc(type[s], stderr);
+				addch(type[s]);
 		if (matrix_view) {
-			fputc('|', stderr);
+			addch('|');
 			if (++cur_col >= columns) {
-				fputc('\n', stderr);
+				addch('\n');
 				cur_col = 0;
 			}
 		} else {
-			fputc(']', stderr);
+			addch(']');
 			if (++cur_col < columns) {
-				fputc(' ', stderr);
+				addch(' ');
 			} else {
-				fputc('\n', stderr);
+				addch('\n');
 				cur_col = 0;
 			}
 		}
 	}
 	if (cur_col)
-		fputc('\n', stderr);
+		addch('\n');
 	if (init)
-		fprintf(stderr, "initializing %d cpus ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]) ..\n", online);
+		printw("initializing %d cpus ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]) ..\n", online);
 	return rows;
 }
 

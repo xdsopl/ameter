@@ -7,6 +7,7 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 
 #include <stdio.h>
 #include <string.h>
+#include <curses.h>
 #include "utils.h"
 
 struct mem_info {
@@ -42,26 +43,26 @@ static int show_mem_info(struct mem_info *mem, int term_width)
 	int buffers_width = (width * mem->buffers + mem->total / 2) / mem->total;
 	int cached_width = (width * mem->cached + mem->total / 2) / mem->total;
 	int free_width = width - used_width - buffers_width - cached_width;
-	fprintf(stderr, "mem: [");
+	printw("mem: [");
 	for (int i = 0; i < used_width; i++)
-		fputc('u', stderr);
+		addch('u');
 	for (int i = 0; i < buffers_width; i++)
-		fputc('b', stderr);
+		addch('b');
 	for (int i = 0; i < cached_width; i++)
-		fputc('c', stderr);
+		addch('c');
 	for (int i = 0; i < free_width; i++)
-		fputc(' ', stderr);
-	fprintf(stderr, "] t=");
+		addch(' ');
+	printw("] t=");
 	readable_1024(1024 * mem->total);
-	fprintf(stderr, "b u=");
+	printw("b u=");
 	readable_1024(1024 * used);
-	fprintf(stderr, "b b=");
+	printw("b b=");
 	readable_1024(1024 * mem->buffers);
-	fprintf(stderr, "b c=");
+	printw("b c=");
 	readable_1024(1024 * mem->cached);
-	fprintf(stderr, "b f=");
+	printw("b f=");
 	readable_1024(1024 * mem->free);
-	fprintf(stderr, "b\n");
+	printw("b\n");
 	return 1;
 }
 

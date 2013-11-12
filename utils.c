@@ -7,6 +7,7 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 
 #include <stdio.h>
 #include <time.h>
+#include <curses.h>
 
 unsigned get_ticks()
 {
@@ -37,7 +38,7 @@ void readable_1024(unsigned long long value)
 		value = (value + 512) / 1024;
 		i++;
 	}
-	fprintf(stderr, "%llu%s", value, prefix[i]);
+	printw("%llu%s", value, prefix[i]);
 }
 
 void aligned_1024(unsigned long long value)
@@ -51,8 +52,8 @@ void aligned_1024(unsigned long long value)
 		i++;
 	}
 	if (!i)
-		fprintf(stderr, "  %5llu%s", value, prefix[i]);
+		printw("  %5llu%s", value, prefix[i]);
 	else
-		fprintf(stderr, "%5llu%s", value, prefix[i]);
+		printw("%5llu%s", value, prefix[i]);
 }
 
