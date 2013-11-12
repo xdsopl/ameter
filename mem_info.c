@@ -13,7 +13,7 @@ struct mem_info {
 	unsigned long total, free, buffers, cached, swap_total, swap_free;
 };
 
-void update_mem_info(struct mem_info *mem)
+static void update_mem_info(struct mem_info *mem)
 {
 	FILE *proc_meminfo = fopen("/proc/meminfo", "r");
 	char str[4096];
@@ -34,7 +34,7 @@ void update_mem_info(struct mem_info *mem)
 	fclose(proc_meminfo);
 }
 
-int show_mem_info(struct mem_info *mem, int term_width)
+static int show_mem_info(struct mem_info *mem, int term_width)
 {
 	unsigned long used = mem->total - mem->free - mem->buffers - mem->cached;
 	int width = term_width - 5 * 10 - 7;

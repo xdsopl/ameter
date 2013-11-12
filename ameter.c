@@ -14,7 +14,7 @@ int handle_mem_info(int term_width);
 int handle_net_stat(unsigned ticks);
 int handle_disk_stat(unsigned ticks);
 
-int seperator(int compact)
+static int seperator(int compact)
 {
 	if (compact)
 		return 0;

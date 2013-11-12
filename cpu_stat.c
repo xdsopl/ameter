@@ -22,7 +22,7 @@ struct cpu_stat {
 	unsigned long long stats[CPU_STAT_MAX], flags;
 };
 
-void parse_cpu_stat(struct cpu_stat *cpus, char *str)
+static void parse_cpu_stat(struct cpu_stat *cpus, char *str)
 {
 	struct cpu_stat cpu;
 	int num;
@@ -51,7 +51,7 @@ void parse_cpu_stat(struct cpu_stat *cpus, char *str)
 		cpus[num] = cpu;
 }
 
-void update_cpu_stat(struct cpu_stat *cpus)
+static void update_cpu_stat(struct cpu_stat *cpus)
 {
 	memset(cpus, 0, sizeof(struct cpu_stat) * CPU_NUM_MAX);
 	FILE *proc_stat = fopen("/proc/stat", "r");
@@ -63,7 +63,7 @@ void update_cpu_stat(struct cpu_stat *cpus)
 	fclose(proc_stat);
 }
 
-int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_width, int compact)
+static int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_width, int compact)
 {
 	(void)compact;
 	int online = 0;
@@ -125,7 +125,7 @@ int show_cpu_stat(struct cpu_stat *last, struct cpu_stat *current, int term_widt
 	return rows;
 }
 
-void copy_cpu_stat(struct cpu_stat *dst, struct cpu_stat *src)
+static void copy_cpu_stat(struct cpu_stat *dst, struct cpu_stat *src)
 {
 	memcpy(dst, src, sizeof(struct cpu_stat) * CPU_NUM_MAX);
 }

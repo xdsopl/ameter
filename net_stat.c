@@ -16,7 +16,7 @@ struct net_stat {
 	unsigned long long rx, tx;
 };
 
-int parse_net_stat(struct net_stat *dev, char *str)
+static int parse_net_stat(struct net_stat *dev, char *str)
 {
 	int i;
 	for (i = 0; str[i] == ' ' && i < 6; i++);
@@ -36,7 +36,7 @@ int parse_net_stat(struct net_stat *dev, char *str)
 	return 1;
 }
 
-void update_net_stat(struct net_stat *devs)
+static void update_net_stat(struct net_stat *devs)
 {
 	memset(devs, 0, sizeof(struct net_stat) * NET_DEV_NUM_MAX);
 	FILE *proc_net_dev = fopen("/proc/net/dev", "r");
@@ -49,12 +49,12 @@ void update_net_stat(struct net_stat *devs)
 	fclose(proc_net_dev);
 }
 
-void copy_net_stat(struct net_stat *dst, struct net_stat *src)
+static void copy_net_stat(struct net_stat *dst, struct net_stat *src)
 {
 	memcpy(dst, src, sizeof(struct net_stat) * NET_DEV_NUM_MAX);
 }
 
-int show_net_stat(struct net_stat *last, struct net_stat *current, unsigned ticks)
+static int show_net_stat(struct net_stat *last, struct net_stat *current, unsigned ticks)
 {
 	int rows = 0;
 	for (int i = 0; i < NET_DEV_NUM_MAX; i++) {

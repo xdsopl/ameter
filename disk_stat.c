@@ -17,7 +17,7 @@ struct disk_stat {
 	unsigned long rx, wx;
 };
 
-int parse_disk_stat(struct disk_stat *dev, char *str)
+static int parse_disk_stat(struct disk_stat *dev, char *str)
 {
 	str += 13;
 	char *end = strchr(str, ' ');
@@ -41,7 +41,7 @@ int parse_disk_stat(struct disk_stat *dev, char *str)
 	return 1;
 }
 
-void update_disk_stat(struct disk_stat *devs)
+static void update_disk_stat(struct disk_stat *devs)
 {
 	memset(devs, 0, sizeof(struct disk_stat) * DISK_STAT_NUM_MAX);
 	FILE *proc_diskstats = fopen("/proc/diskstats", "r");
@@ -53,12 +53,12 @@ void update_disk_stat(struct disk_stat *devs)
 	fclose(proc_diskstats);
 }
 
-void copy_disk_stat(struct disk_stat *dst, struct disk_stat *src)
+static void copy_disk_stat(struct disk_stat *dst, struct disk_stat *src)
 {
 	memcpy(dst, src, sizeof(struct disk_stat) * DISK_STAT_NUM_MAX);
 }
 
-int show_disk_stat(struct disk_stat *last, struct disk_stat *current, unsigned ticks)
+static int show_disk_stat(struct disk_stat *last, struct disk_stat *current, unsigned ticks)
 {
 	int sb = 512;
 	int rows = 0;
