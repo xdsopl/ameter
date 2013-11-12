@@ -54,8 +54,9 @@ void aligned_1024(unsigned long long value)
 		i++;
 	}
 	if (!i)
-		fputs("  ", stderr);
-	fprintf(stderr, "%5llu%s", value, prefix[i]);
+		fprintf(stderr, "  %5llu%s", value, prefix[i]);
+	else
+		fprintf(stderr, "%5llu%s", value, prefix[i]);
 }
 
 #define CPU_NUM_MAX (512)
