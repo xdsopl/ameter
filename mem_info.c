@@ -39,6 +39,7 @@ static int show_mem_info(struct mem_info *mem, int term_width)
 {
 	unsigned long used = mem->total - mem->free - mem->buffers - mem->cached;
 	int width = term_width - 5 * 10 - 7;
+	width = width < 0 ? 0 : width;
 	int used_width = (width * used + mem->total / 2) / mem->total;
 	int buffers_width = (width * mem->buffers + mem->total / 2) / mem->total;
 	int cached_width = (width * mem->cached + mem->total / 2) / mem->total;
