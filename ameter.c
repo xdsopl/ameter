@@ -37,7 +37,7 @@ void readable_1024(unsigned long long value)
 	while (i < sizeof(prefix) / sizeof(*prefix)) {
 		if (value < 10240)
 			break;
-		value /= 1024;
+		value = (value + 512) / 1024;
 		i++;
 	}
 	fprintf(stderr, "%llu%s", value, prefix[i]);
@@ -50,7 +50,7 @@ void aligned_1024(unsigned long long value)
 	while (i < sizeof(prefix) / sizeof(*prefix)) {
 		if (value < 10240)
 			break;
-		value /= 1024;
+		value = (value + 512) / 1024;
 		i++;
 	}
 	if (!i)
