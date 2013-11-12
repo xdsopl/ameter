@@ -14,27 +14,31 @@ int handle_mem_info(int term_width);
 int handle_net_stat(unsigned ticks);
 int handle_disk_stat(unsigned ticks);
 
+int seperator(int compact)
+{
+	if (compact)
+		return 0;
+	fputc('\n', stderr);
+	return 1;
+}
+
 int main()
 {
 	int compact = 0;
 	while (1) {
 		fprintf(stderr, "\E[H\E[2J");
 		int term_width = 80;
-		int term_height = 24;
+		int term_height = 23;
 		int rows = 1;
 		fputs(string_time("%F %T\n"), stderr);
-		if (!compact)
-			fputc('\n', stderr);
+		rows += seperator(compact);
 		rows += handle_cpu_stat(term_width, compact);
-		if (!compact)
-			fputc('\n', stderr);
+		rows += seperator(compact);
 		rows += handle_mem_info(term_width);
-		if (!compact)
-			fputc('\n', stderr);
+		rows += seperator(compact);
 		unsigned ticks = get_ticks();
 		rows += handle_net_stat(ticks);
-		if (!compact)
-			fputc('\n', stderr);
+		rows += seperator(compact);
 		rows += handle_disk_stat(ticks);
 		if (rows > term_height)
 			compact = 1;
