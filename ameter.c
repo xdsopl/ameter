@@ -23,9 +23,11 @@ static int seperator(int compact)
 	return 1;
 }
 
+WINDOW *stdscr;
+
 int main()
 {
-	initscr();
+	stdscr = initscr();
 	int compact = 0;
 	while (1) {
 		clear();
