@@ -16,17 +16,24 @@ struct net_stat {
 	unsigned long long rx, tx;
 };
 
-void parse_net_stat(struct net_stat *dev, char *str)
+int parse_net_stat(struct net_stat *dev, char *str)
 {
 	int i;
 	for (i = 0; str[i] == ' ' && i < 6; i++);
+	if (i > 4)
+		return 0;
 	memcpy(dev->name, str + i, 6 - i);
 	dev->name[6 - i] = 0;
 	str += 7;
 	unsigned long long tmp[7];
-	sscanf(str, "%llu %llu %llu %llu %llu %llu %llu %llu %llu",
+	int ret = sscanf(str, "%llu %llu %llu %llu %llu %llu %llu %llu %llu",
 		&dev->rx, &tmp[0], &tmp[1], &tmp[2], &tmp[3],
 		&tmp[4], &tmp[5], &tmp[6], &dev->tx);
+	if (ret != 9) {
+		memset(dev, 0, sizeof(struct net_stat));
+		return 0;
+	}
+	return 1;
 }
 
 void update_net_stat(struct net_stat *devs)
@@ -37,7 +44,7 @@ void update_net_stat(struct net_stat *devs)
 	int i = 0;
 	while (i < NET_DEV_NUM_MAX && fgets(str, sizeof(str), proc_net_dev)) {
 		if (strlen(str) > 6 && str[6] == ':')
-			parse_net_stat(devs + i++, str);
+			i += parse_net_stat(devs + i, str);
 	}
 	fclose(proc_net_dev);
 }

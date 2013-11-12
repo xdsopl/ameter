@@ -17,23 +17,28 @@ struct disk_stat {
 	unsigned long rx, wx;
 };
 
-void parse_disk_stat(struct disk_stat *dev, char *str)
+int parse_disk_stat(struct disk_stat *dev, char *str)
 {
 	str += 13;
 	char *end = strchr(str, ' ');
 	int len = end - str;
 	if (!end || !len || len >= 16)
-		return;
+		return 0;
 	if (!strncmp(str, "sd", 2) && isdigit(str[len-1]))
-		return;
+		return 0;
 	if (!strncmp(str, "hd", 2) && isdigit(str[len-1]))
-		return;
+		return 0;
 	memcpy(dev->name, str, len);
 	dev->name[len] = 0;
 	unsigned long tmp[5];
-	sscanf(end, "%lu %lu %lu %lu %lu %lu %lu",
+	int ret = sscanf(end, "%lu %lu %lu %lu %lu %lu %lu",
 		&tmp[0], &tmp[1], &dev->rx, &tmp[2],
 		&tmp[3], &tmp[4], &dev->wx);
+	if (ret != 7) {
+		memset(dev, 0, sizeof(struct disk_stat));
+		return 0;
+	}
+	return 1;
 }
 
 void update_disk_stat(struct disk_stat *devs)
@@ -44,7 +49,7 @@ void update_disk_stat(struct disk_stat *devs)
 	int i = 0;
 	while (i < DISK_STAT_NUM_MAX && fgets(str, sizeof(str), proc_diskstats))
 		if (strlen(str) > 13)
-			parse_disk_stat(devs + i++, str);
+			i += parse_disk_stat(devs + i, str);
 	fclose(proc_diskstats);
 }
 
