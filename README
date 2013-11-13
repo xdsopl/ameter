@@ -33,7 +33,8 @@ You can quit both with a simple 'ctrl-c'
 And this is how the new ameter looks like on a "Many Core Platform" at the moment:
 
 *snip*
-showing 228 cpus ([u]ser, [n]ice, [s]ystem, io[w]ait, ir[q]):
+2013-11-13 18:59:54
+
 uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
 uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
 uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
@@ -49,5 +50,11 @@ uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
 uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
 uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|uuuu|
 uuuu|uuuu|uuuu|uuuu|
+
+irqs/s: q4=0 q26=1
+
+mem: [uu                     ] t=5741mib u=380mib b=0b c=52mib f=5309mib
+
+mic0: rx=     18b/s tx=    426b/s total: rx=   11gib tx=   18gib
 *snip*
 
