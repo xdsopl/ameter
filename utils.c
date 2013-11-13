@@ -57,3 +57,11 @@ void aligned_1024(WINDOW *pad, unsigned long long value)
 		wprintw(pad, "%5llu%s", value, prefix[i]);
 }
 
+int seperator(WINDOW *pad, int compact)
+{
+	if (compact)
+		return 0;
+	waddch(pad, '\n');
+	return 1;
+}
+

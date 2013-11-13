@@ -10,4 +10,5 @@ unsigned get_ticks();
 char *string_time(char *fmt);
 void readable_1024(WINDOW *pad, unsigned long long value);
 void aligned_1024(WINDOW *pad, unsigned long long value);
+int seperator(WINDOW *pad, int compact);
 #endif

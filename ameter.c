@@ -10,18 +10,10 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 #include <curses.h>
 #include "utils.h"
 
-int handle_cpu_stat(WINDOW *pad, int compact);
+int handle_cpu_stat(WINDOW *pad, unsigned ticks, int compact);
 int handle_mem_info(WINDOW *pad);
 int handle_net_stat(WINDOW *pad, unsigned ticks);
 int handle_disk_stat(WINDOW *pad, unsigned ticks);
-
-static int seperator(WINDOW *pad, int compact)
-{
-	if (compact)
-		return 0;
-	waddch(pad, '\n');
-	return 1;
-}
 
 int main()
 {
@@ -32,13 +24,13 @@ int main()
 		wclear(pad);
 		wresize(pad, getmaxy(stdscr), getmaxx(stdscr) + 1);
 		int rows = 1;
+		unsigned ticks = get_ticks();
 		waddstr(pad, string_time("%F %T\n"));
 		rows += seperator(pad, compact);
-		rows += handle_cpu_stat(pad, compact);
+		rows += handle_cpu_stat(pad, ticks, compact);
 		rows += seperator(pad, compact);
 		rows += handle_mem_info(pad);
 		rows += seperator(pad, compact);
-		unsigned ticks = get_ticks();
 		rows += handle_net_stat(pad, ticks);
 		rows += seperator(pad, compact);
 		rows += handle_disk_stat(pad, ticks);

@@ -6,8 +6,10 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <curses.h>
+#include "utils.h"
 
 #define CPU_NUM_MAX (512)
 #define CPU_ONLINE (1 << 0)
@@ -21,6 +23,12 @@ You should have received a copy of the CC0 Public Domain Dedication along with t
 
 struct cpu_stat {
 	unsigned long long stats[CPU_STAT_MAX], flags;
+};
+
+#define IRQ_NUM_MAX (16)
+
+struct irq_stat {
+	unsigned long long num, count;
 };
 
 static void parse_cpu_stat(struct cpu_stat *cpus, char *str)
@@ -52,21 +60,39 @@ static void parse_cpu_stat(struct cpu_stat *cpus, char *str)
 		cpus[num] = cpu;
 }
 
-static void update_cpu_stat(struct cpu_stat *cpus)
+static void parse_irq_stat(struct irq_stat *irqs, char *str)
+{
+	if (!strtok(str, " ") || !strtok(0, " "))
+		return;
+	char *token = strtok(0, " ");
+	for (int num = 0, i = 0; i < IRQ_NUM_MAX && token; num++) {
+		unsigned long long count = atoll(token);
+		if (count) {
+			irqs[i].num = num;
+			irqs[i].count = count;
+			i++;
+		}
+		token = strtok(0, " ");
+	}
+}
+
+static void update_cpu_stat(struct cpu_stat *cpus, struct irq_stat *irqs)
 {
 	memset(cpus, 0, sizeof(struct cpu_stat) * CPU_NUM_MAX);
+	memset(irqs, 0, sizeof(struct irq_stat) * IRQ_NUM_MAX);
 	FILE *proc_stat = fopen("/proc/stat", "r");
-	char str[4096];
+	char str[16384];
 	while (fgets(str, sizeof(str), proc_stat)) {
 		if (!strncmp(str, "cpu", 3) && str[3] != ' ')
 			parse_cpu_stat(cpus, str);
+		else if (!strncmp(str, "intr ", 5))
+			parse_irq_stat(irqs, str);
 	}
 	fclose(proc_stat);
 }
 
-static int show_cpu_stat(WINDOW *pad, struct cpu_stat *last, struct cpu_stat *current, int compact)
+static int show_cpu_stat(WINDOW *pad, struct cpu_stat *last, struct cpu_stat *current)
 {
-	(void)compact;
 	int online = 0;
 	for (int i = 0; i < CPU_NUM_MAX; i++)
 		online += (current[i].flags & CPU_ONLINE) ? 1 : 0;
@@ -128,17 +154,49 @@ static int show_cpu_stat(WINDOW *pad, struct cpu_stat *last, struct cpu_stat *cu
 	return rows;
 }
 
+static int show_irq_stat(WINDOW *pad, struct irq_stat *last, struct irq_stat *current, unsigned ticks)
+{
+	waddstr(pad, "irqs/s:");
+	int init = 1;
+	for (int i = 0; i < IRQ_NUM_MAX; i++) {
+		if (!current[i].count)
+			continue;
+		int j = 0;
+		while (j < IRQ_NUM_MAX && current[i].num != last[j].num)
+			j++;
+		if (j >= IRQ_NUM_MAX || !last[j].count)
+			continue;
+		int diff = current[i].count - last[j].count;
+		if (diff)
+			wprintw(pad, " q%llu=%llu", current[i].num, (1000 * diff + ticks / 2) / ticks);
+		init = 0;
+	}
+	if (init)
+		waddstr(pad, " initializing or no irq firing ..");
+	waddch(pad, '\n');
+	return 1;
+}
+
 static void copy_cpu_stat(struct cpu_stat *dst, struct cpu_stat *src)
 {
 	memcpy(dst, src, sizeof(struct cpu_stat) * CPU_NUM_MAX);
 }
 
-int handle_cpu_stat(WINDOW *pad, int compact)
+static void copy_irq_stat(struct irq_stat *dst, struct irq_stat *src)
+{
+	memcpy(dst, src, sizeof(struct irq_stat) * IRQ_NUM_MAX);
+}
+
+int handle_cpu_stat(WINDOW *pad, unsigned ticks, int compact)
 {
 	static struct cpu_stat last_cpu_stat[CPU_NUM_MAX], current_cpu_stat[CPU_NUM_MAX];
-	update_cpu_stat(current_cpu_stat);
-	int rows = show_cpu_stat(pad, last_cpu_stat, current_cpu_stat, compact);
+	static struct irq_stat last_irq_stat[IRQ_NUM_MAX], current_irq_stat[IRQ_NUM_MAX];
+	update_cpu_stat(current_cpu_stat, current_irq_stat);
+	int rows = show_cpu_stat(pad, last_cpu_stat, current_cpu_stat);
+	rows += seperator(pad, compact);
+	rows += show_irq_stat(pad, last_irq_stat, current_irq_stat, ticks);
 	copy_cpu_stat(last_cpu_stat, current_cpu_stat);
+	copy_irq_stat(last_irq_stat, current_irq_stat);
 	return rows;
 }
 
