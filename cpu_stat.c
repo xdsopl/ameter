@@ -124,7 +124,10 @@ static int show_cpu_stat(WINDOW *pad, struct cpu_stat *last, struct cpu_stat *cu
 		sum = 0;
 		for (int s = 0; s < CPU_STAT_MAX; s++)
 			sum += diff[s];
-		diff[CPU_IDLE] += width - sum;
+		int max_stat = CPU_IDLE;
+		for (int s = 0; s < CPU_STAT_MAX; s++)
+			max_stat = diff[max_stat] > diff[s] ? max_stat : s;
+		diff[max_stat] += width - sum;
 		char type[CPU_STAT_MAX] = { 'u', 'n', 's', 'w', 'q', ' ' };
 		if (!matrix_view)
 			wprintw(pad, "cpu%d:%s[", i, i < 10 && online >= 10 ? "  " : " ");
