@@ -171,7 +171,7 @@ static int show_irq_stat(WINDOW *pad, struct irq_stat *last, struct irq_stat *cu
 			continue;
 		int diff = current[i].count - last[j].count;
 		if (diff)
-			wprintw(pad, " q%llu=%llu", current[i].num, (1000 * diff + ticks / 2) / ticks);
+			wprintw(pad, " q%llu=%d", current[i].num, (1000 * diff + ticks / 2) / ticks);
 		init = 0;
 	}
 	if (init)
