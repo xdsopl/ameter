@@ -29,6 +29,8 @@ static int parse_disk_stat(struct disk_stat *dev, char *str)
 		return 0;
 	if (!strncmp(str, "hd", 2) && isdigit(str[len-1]))
 		return 0;
+	if (!strncmp(str, "mmcblk", 6) && len > 7)
+		return 0;
 	memcpy(dev->name, str, len);
 	dev->name[len] = 0;
 	unsigned long tmp[5];
